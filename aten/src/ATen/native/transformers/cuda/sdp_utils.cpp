@@ -818,6 +818,44 @@ SDPBackend select_sdp_backend(sdp_params const& kernel_params) {
   // Get ideal kernel ordering
   const auto ordering = priority_order(kernel_params);
 
+
+  // ############################################## Added check supported backends code
+  for (auto& backend : ordering) {
+    switch (backend) {
+      case SDPBackend::cudnn_attention:
+        if (sdp::can_use_cudnn_attention(kernel_params, print_debug)) {
+              printf("Can use cudnn attention\n");
+              break;
+        }
+        printf("Cannot use cudnn attention\n");
+        break;
+      case SDPBackend::flash_attention:
+        if (sdp::can_use_flash_attention(kernel_params, print_debug)) {
+          printf("Can use flash attention\n");
+          break;
+        }
+        printf("Cannot use flash attention\n");
+        break;
+      case SDPBackend::efficient_attention:
+        if (sdp::can_use_mem_efficient_attention(kernel_params, print_debug)) {
+          printf("Can use mem efficient attention\n");
+          break;
+        }
+        printf("Cannot use mem efficient attention\n");
+        break;
+      case SDPBackend::math:
+        if (ctx.userEnabledMathSDP()) {
+          printf("Can use math attention\n");
+          break;
+        }
+        printf("Cannot use math attention\n");
+        break;
+      default:
+        break;
+    }
+  }
+  // ##############################################
+
   // Because TORCHCHECK checks if condition is true we negate debug so that
   // The statements will be printed when debug is true
   bool print_debug = false;
