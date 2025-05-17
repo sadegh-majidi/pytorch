@@ -817,7 +817,7 @@ SDPBackend select_sdp_backend(sdp_params const& kernel_params) {
   }
   // Get ideal kernel ordering
   const auto ordering = priority_order(kernel_params);
-
+  bool print_debug = false;
 
   // ############################################## Added check supported backends code
   for (auto& backend : ordering) {
@@ -858,7 +858,6 @@ SDPBackend select_sdp_backend(sdp_params const& kernel_params) {
 
   // Because TORCHCHECK checks if condition is true we negate debug so that
   // The statements will be printed when debug is true
-  bool print_debug = false;
   for (auto& backend : ordering) {
     switch (backend) {
       case SDPBackend::cudnn_attention:
