@@ -817,73 +817,77 @@ SDPBackend select_sdp_backend(sdp_params const& kernel_params) {
   }
   // Get ideal kernel ordering
   const auto ordering = priority_order(kernel_params);
-  bool print_debug = true;
+  bool print_debug = false;
 
   // ############################################## Added check supported backends code
-  for (auto& backend : ordering) {
-    switch (backend) {
-      case SDPBackend::cudnn_attention:
-        if (sdp::can_use_cudnn_attention(kernel_params, print_debug)) {
-              TORCH_WARN("Can use cudnn attention\n");
-              break;
-        }
-        TORCH_WARN("Cannot use cudnn attention\n");
-        break;
-      case SDPBackend::flash_attention:
-        if (sdp::can_use_flash_attention(kernel_params, print_debug)) {
-          TORCH_WARN("Can use flash attention\n");
-          break;
-        }
-        TORCH_WARN("Cannot use flash attention\n");
-        break;
-      case SDPBackend::efficient_attention:
-        if (sdp::can_use_mem_efficient_attention(kernel_params, print_debug)) {
-          TORCH_WARN("Can use mem efficient attention\n");
-          break;
-        }
-        TORCH_WARN("Cannot use mem efficient attention\n");
-        break;
-      case SDPBackend::math:
-        if (ctx.userEnabledMathSDP()) {
-          TORCH_WARN("Can use math attention\n");
-          break;
-        }
-        TORCH_WARN("Cannot use math attention\n");
-        break;
-      default:
-        break;
-    }
-  }
+  // for (auto& backend : ordering) {
+  //   switch (backend) {
+  //     case SDPBackend::cudnn_attention:
+  //       if (sdp::can_use_cudnn_attention(kernel_params, print_debug)) {
+  //             TORCH_WARN("Can use cudnn attention\n");
+  //             break;
+  //       }
+  //       TORCH_WARN("Cannot use cudnn attention\n");
+  //       break;
+  //     case SDPBackend::flash_attention:
+  //       if (sdp::can_use_flash_attention(kernel_params, print_debug)) {
+  //         TORCH_WARN("Can use flash attention\n");
+  //         break;
+  //       }
+  //       TORCH_WARN("Cannot use flash attention\n");
+  //       break;
+  //     case SDPBackend::efficient_attention:
+  //       if (sdp::can_use_mem_efficient_attention(kernel_params, print_debug)) {
+  //         TORCH_WARN("Can use mem efficient attention\n");
+  //         break;
+  //       }
+  //       TORCH_WARN("Cannot use mem efficient attention\n");
+  //       break;
+  //     case SDPBackend::math:
+  //       if (ctx.userEnabledMathSDP()) {
+  //         TORCH_WARN("Can use math attention\n");
+  //         break;
+  //       }
+  //       TORCH_WARN("Cannot use math attention\n");
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
   // ##############################################
+
+  if (sdp::can_use_flash_attention(kernel_params, print_debug)) {
+          return SDPBackend::flash_attention;
+  }
 
   // Because TORCHCHECK checks if condition is true we negate debug so that
   // The statements will be printed when debug is true
-  for (auto& backend : ordering) {
-    switch (backend) {
-      case SDPBackend::cudnn_attention:
-        if (sdp::can_use_cudnn_attention(kernel_params, print_debug)) {
-              return SDPBackend::cudnn_attention;
-        }
-        break;
-      case SDPBackend::flash_attention:
-        if (sdp::can_use_flash_attention(kernel_params, print_debug)) {
-          return SDPBackend::flash_attention;
-        }
-        break;
-      case SDPBackend::efficient_attention:
-        if (sdp::can_use_mem_efficient_attention(kernel_params, print_debug)) {
-          return SDPBackend::efficient_attention;
-        }
-        break;
-      case SDPBackend::math:
-        if (ctx.userEnabledMathSDP()) {
-          return SDPBackend::math;
-        }
-        break;
-      default:
-        TORCH_CHECK(false, "Invalid backend");
-    }
-  }
+  // for (auto& backend : ordering) {
+  //   switch (backend) {
+  //     case SDPBackend::cudnn_attention:
+  //       if (sdp::can_use_cudnn_attention(kernel_params, print_debug)) {
+  //             return SDPBackend::cudnn_attention;
+  //       }
+  //       break;
+  //     case SDPBackend::flash_attention:
+  //       if (sdp::can_use_flash_attention(kernel_params, print_debug)) {
+  //         return SDPBackend::flash_attention;
+  //       }
+  //       break;
+  //     case SDPBackend::efficient_attention:
+  //       if (sdp::can_use_mem_efficient_attention(kernel_params, print_debug)) {
+  //         return SDPBackend::efficient_attention;
+  //       }
+  //       break;
+  //     case SDPBackend::math:
+  //       if (ctx.userEnabledMathSDP()) {
+  //         return SDPBackend::math;
+  //       }
+  //       break;
+  //     default:
+  //       TORCH_CHECK(false, "Invalid backend");
+  //   }
+  // }
   // If we have gotten to this point then two things have happened:
   // 1. use_flash_attention or use_mem_efficient did not satisfy the
   // constraints to be ran
