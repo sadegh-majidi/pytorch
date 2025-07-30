@@ -1991,17 +1991,17 @@ static Tensor _matmul_impl(
   }
 
   if (dim_tensor1 == 1 && dim_tensor2 == 1) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:1994): DOT operation for (%ld) * (%ld) started.\n", tensor1->sizes()[0], tensor2->sizes()[0]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:1994): DOT operation for (%ld) * (%ld) started.\n", tensor1.sizes()[0], tensor2.sizes()[0]);
     return has_out ? at::dot_out(out, tensor1, tensor2) : tensor1.dot(tensor2);
   } else if (dim_tensor1 == 2 && dim_tensor2 == 1) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:1997): MV operation for (%ld, %ld) * (%ld) started.\n", tensor1->sizes()[0], tensor1->sizes()[1], tensor2->sizes()[0]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:1997): MV operation for (%ld, %ld) * (%ld) started.\n", tensor1.sizes()[0], tensor1.sizes()[1], tensor2.sizes()[0]);
     return has_out ? at::mv_out(out, tensor1, tensor2) : tensor1.mv(tensor2);
   } else if (dim_tensor1 == 1 && dim_tensor2 == 2) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2000): MM operation for (%ld) * (%ld, %ld) started.\n", tensor1->sizes()[0], tensor2->sizes()[0], tensor2->sizes()[1]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2000): MM operation for (%ld) * (%ld, %ld) started.\n", tensor1.sizes()[0], tensor2.sizes()[0], tensor2.sizes()[1]);
     return has_out ? at::mm_out(out, tensor1.unsqueeze(0), tensor2).squeeze_(0)
                    : tensor1.unsqueeze(0).mm(tensor2).squeeze_(0);
   } else if (dim_tensor1 == 2 && dim_tensor2 == 2) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2004): MM operation for (%ld, %ld) * (%ld, %ld) started.\n", tensor1->sizes()[0], tensor1->sizes()[1], tensor2->sizes()[0], tensor2->sizes()[1]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2004): MM operation for (%ld, %ld) * (%ld, %ld) started.\n", tensor1.sizes()[0], tensor1.sizes()[1], tensor2.sizes()[0], tensor2.sizes()[1]);
     return has_out ? at::mm_out(out, tensor1, tensor2) : tensor1.mm(tensor2);
   } else if (should_fold(tensor1, tensor2, has_out)) {
     // dim_tensor1 >=3 && (dim_tensor2 == 1 || dim_tensor2 == 2) ||
