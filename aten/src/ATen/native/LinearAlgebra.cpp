@@ -1991,17 +1991,17 @@ static Tensor _matmul_impl(
   }
 
   if (dim_tensor1 == 1 && dim_tensor2 == 1) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): DOT operation for (%d) * (%d) started.\n", tensor1->sizes()[0], tensor2->sizes()[0]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:1994): DOT operation for (%d) * (%d) started.\n", tensor1->sizes()[0], tensor2->sizes()[0]);
     return has_out ? at::dot_out(out, tensor1, tensor2) : tensor1.dot(tensor2);
   } else if (dim_tensor1 == 2 && dim_tensor2 == 1) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): MV operation for (%d, %d) * (%d) started.\n", tensor1->sizes()[0], tensor1->sizes()[1], tensor2->sizes()[0]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:1997): MV operation for (%d, %d) * (%d) started.\n", tensor1->sizes()[0], tensor1->sizes()[1], tensor2->sizes()[0]);
     return has_out ? at::mv_out(out, tensor1, tensor2) : tensor1.mv(tensor2);
   } else if (dim_tensor1 == 1 && dim_tensor2 == 2) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): MM operation for (%d) * (%d, %d) started.\n", tensor1->sizes()[0], tensor2->sizes()[0], tensor2->sizes()[1]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2000): MM operation for (%d) * (%d, %d) started.\n", tensor1->sizes()[0], tensor2->sizes()[0], tensor2->sizes()[1]);
     return has_out ? at::mm_out(out, tensor1.unsqueeze(0), tensor2).squeeze_(0)
                    : tensor1.unsqueeze(0).mm(tensor2).squeeze_(0);
   } else if (dim_tensor1 == 2 && dim_tensor2 == 2) {
-    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): MM operation for (%d, %d) * (%d, %d) started.\n", tensor1->sizes()[0], tensor1->sizes()[1], tensor2->sizes()[0], tensor2->sizes()[1]);
+    printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2004): MM operation for (%d, %d) * (%d, %d) started.\n", tensor1->sizes()[0], tensor1->sizes()[1], tensor2->sizes()[0], tensor2->sizes()[1]);
     return has_out ? at::mm_out(out, tensor1, tensor2) : tensor1.mm(tensor2);
   } else if (should_fold(tensor1, tensor2, has_out)) {
     // dim_tensor1 >=3 && (dim_tensor2 == 1 || dim_tensor2 == 2) ||
@@ -2039,7 +2039,7 @@ static Tensor _matmul_impl(
     const auto t1_folded = t1->reshape({folded_dim1, sizes_1.back()});
     if (!has_out) {
       if (t2_is_matrix) {
-        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): MM operation for (%d, %d) * (%d, %d) started.\n", folded_dim1, sizes_1.back(), t2->sizes()[0], t2->sizes()[1]);
+        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2042): MM operation for (%ld, %d) * (%d, %d) started.\n", folded_dim1, sizes_1.back(), t2->sizes()[0], t2->sizes()[1]);
         const auto output = at::_unsafe_view(t1_folded.mm(*t2), output_shape);
         // This copies if we perform a 2D @ 3D and the first tensor requires_grad
         // See should_fold for why.
@@ -2047,7 +2047,7 @@ static Tensor _matmul_impl(
         // correct strides to avoid this unnecessary copy.
         return transpose ? output.mT().contiguous() : output;
       } else {
-        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): MV operation for (%d, %d) * (%d) started.\n", folded_dim1, sizes_1.back(), t2->sizes()[0]);
+        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2050): MV operation for (%ld, %d) * (%d) started.\n", folded_dim1, sizes_1.back(), t2->sizes()[0]);
         return at::_unsafe_view(t1_folded.mv(*t2), output_shape);
       }
     } else {
@@ -2062,10 +2062,10 @@ static Tensor _matmul_impl(
       auto reshaped_out = t2_is_matrix ? out.reshape({folded_dim1, t2->sizes().back()})
                                        : out.reshape({folded_dim1});
       if (t2_is_matrix) {
-        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): MM (out) operation for (%d, %d) * (%d, %d) started.\n", folded_dim1, sizes_1.back(), t2->sizes()[0], t2->sizes()[1]);
+        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2065): MM (out) operation for (%d, %d) * (%d, %d) started.\n", folded_dim1, sizes_1.back(), t2->sizes()[0], t2->sizes()[1]);
         at::mm_out(reshaped_out, t1_folded, *t2);
       } else {
-        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): MV (out) operation for (%d, %d) * (%d) started.\n", folded_dim1, sizes_1.back(), t2->sizes().back());
+        printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2068): MV (out) operation for (%d, %d) * (%d) started.\n", folded_dim1, sizes_1.back(), t2->sizes().back());
         at::mv_out(reshaped_out, t1_folded, *t2);
       }
       if (!reshaped_out.is_alias_of(out)) {
@@ -2131,7 +2131,7 @@ static Tensor _matmul_impl(
     }
 
     if (!has_out) {
-      printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2126): BMM operation for (%d, %d, %d) * (%d, %d, %d) started.\n", expand_batch_product, n, m1, expand_batch_product, m2, p);
+      printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2134): BMM operation for (%ld, %d, %d) * (%ld, %d, %d) started.\n", expand_batch_product, n, m1, expand_batch_product, m2, p);
       if (vector_rhs) {
         return at::_unsafe_view(tensor1_expanded.bmm(tensor2_expanded).squeeze(-1), output_shape);
       } else {
@@ -2147,7 +2147,7 @@ static Tensor _matmul_impl(
       if (!reshaped_out.is_alias_of(out)) {
         out.copy_(reshaped_out.view_as(out));
       }
-      printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2142): BMM_OUT operation for (%d, %d, %d) * (%d, %d, %d) started.\n", expand_batch_product, n, m1, expand_batch_product, m2, p);
+      printf("Point of Interest (aten/src/ATen/native/LinearAlgebra.cpp:2150): BMM_OUT operation for (%ld, %d, %d) * (%ld, %d, %d) started.\n", expand_batch_product, n, m1, expand_batch_product, m2, p);
       return out;
     }
   }

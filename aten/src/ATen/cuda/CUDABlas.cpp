@@ -500,7 +500,7 @@ static inline bool bgemm_internal_cublaslt(CUDABLAS_BGEMM_ARGTYPES_AND_C_DTYPE(D
     cublasStatus = CUBLAS_STATUS_NOT_SUPPORTED;
   }
   else {
-    printf("cublasLtMatmul started.");
+    printf("cublasLtMatmul started.  (CUDABLAS.cpp:503)\n");
     cublasStatus = cublasLtMatmul(
       ltHandle,
       computeDesc.descriptor(),
@@ -657,7 +657,7 @@ inline void bgemm_internal_cublas_half_helper(CUDABLAS_BGEMM_ARGTYPES_AND_C_DTYP
     beta_ptr = &hbeta;
   }
   if (prop->major >= 5){
-    printf("(half) cublasGemmStridedBatchedEx started.");
+    printf("(half) cublasGemmStridedBatchedEx started. (CUDABLAS.cpp:660)\n");
     TORCH_CUDABLAS_CHECK(cublasGemmStridedBatchedEx(
       handle, opa, opb, m, n, k,
       alpha_ptr, a, CUDA_R_16F, lda, stridea,
@@ -665,7 +665,7 @@ inline void bgemm_internal_cublas_half_helper(CUDABLAS_BGEMM_ARGTYPES_AND_C_DTYP
       c, std::is_same_v<C_Dtype, float> ? CUDA_R_32F : CUDA_R_16F, ldc, stridec,
       num_batches, compute_type, CUBLAS_GEMM_DEFAULT_TENSOR_OP));
   } else {
-    printf("(half) torch batched GEMM implementation started.");
+    printf("(half) torch batched GEMM implementation started. (CUDABLAS.cpp:668)\n");
     for (const auto i : c10::irange(num_batches)) {
       if (std::is_same_v<C_Dtype, float>) {
         float* c_ptr = (float*)(c + i * stridec);
@@ -705,7 +705,7 @@ inline void bgemm_internal_cublas_bfloat16_helper(CUDABLAS_BGEMM_ARGTYPES_AND_C_
 #else
   auto compute_type = CUDA_R_32F;
 #endif
-  printf("bf16 cublasGemmStridedBatchedEx started.");
+  printf("bf16 cublasGemmStridedBatchedEx started. (CUDABLAS.cpp:708)\n");
   TORCH_CUDABLAS_CHECK(cublasGemmStridedBatchedEx(handle,
                               opa, opb, (int)m, (int)n, (int)k,
                               (void*)&falpha, a, CUDA_R_16BF, (int)lda, stridea,
@@ -1162,7 +1162,7 @@ inline void gemm_internal_cublas_half_helper(CUDABLAS_GEMM_ARGTYPES_AND_C_DTYPE(
         CUBLAS_GEMM_DEFAULT_TENSOR_OP));
     TORCH_CUDABLAS_CHECK(cublasSetMathMode(handle, CUBLAS_DEFAULT_MATH));
   } else {
-    printf("half cublasSgemmEx started.");
+    printf("half cublasSgemmEx started. (CUDABLAS.cpp:1165)\n");
     TORCH_CUDABLAS_CHECK(cublasSgemmEx(
         handle,
         opa,
@@ -1207,7 +1207,7 @@ inline void gemm_internal_cublas_bfloat16_helper(CUDABLAS_GEMM_ARGTYPES_AND_C_DT
   auto compute_type = CUDA_R_32F;
 #endif
   TORCH_CUDABLAS_CHECK(cublasSetMathMode(handle, cublas_flags));
-  printf("bf16 cublasGEMMEx started.");
+  printf("bf16 cublasGEMMEx started. (CUDABLAS.cpp:1210)\n");
   TORCH_CUDABLAS_CHECK(cublasGemmEx(
       handle,
       opa,
