@@ -1139,7 +1139,7 @@ inline void gemm_internal_cublas_half_helper(CUDABLAS_GEMM_ARGTYPES_AND_C_DTYPE(
     }
     // Disallow fp16 reductions that could lead to unexpected overflow issues.
     TORCH_CUDABLAS_CHECK(cublasSetMathMode(handle, cublas_flags));
-    printf("half cublasGEMMEx started.");
+    printf("half cublasGEMMEx started. (CUDABLAS.cpp:1142)\n");
     TORCH_CUDABLAS_CHECK(cublasGemmEx(
         handle,
         opa,
